@@ -1,0 +1,33 @@
+services:
+- service-id: achievement-backend
+  deployment:
+    replicas: 2
+    template:
+      metadata:
+        labels:
+          app: achievement-backend
+      spec:
+        containers:
+          image: "achievement/ps-achievement-backend"
+          network: host
+          volume:
+          - "/usr/local/app/achievement_backend:/achievement"
+          - "/usr/local/app/achievement_backend/logs:/logs"
+          cmd:
+          - "--spring.profiles.active=prod"
+          - "--spring.config.location=/ps/bootstrap-prod.yml"
+    target:
+    - nodeType: docker
+      ipaddr: 10.0.0.163
+      dockerApi: tcp://10.0.0.163:2376
+    verify:
+      curl: "http://#{ipaddr}:#{port}/index.html"
+      timeout: "60s"
+    post-deploy:
+      nginx-upstream:
+        host: 22.123.133.1
+        port: 22
+        username: devops
+        private-key: /Users/devops/devops_ssh
+        upstream-name: achievementbackend
+        file-path: "/etc/nginx/conf.d/achievement_backend.conf"

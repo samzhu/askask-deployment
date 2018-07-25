@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: askask-deployment
+  profiles:
+    active: demo
